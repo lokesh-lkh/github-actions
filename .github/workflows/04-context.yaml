@@ -1,6 +1,11 @@
 name: Contexts demo 
 on: [push] # Triggers the workflow on every push to the repository
 
+env:
+  project: "roboshop"
+  component: "catalogue"
+  environment: "dev"
+
 jobs:
   # Job name
   github-context:
@@ -10,3 +15,9 @@ jobs:
         run: |
           echo "${{ toJson(github) }}" # The command to execute
           echo "branch name: ${{ github.ref_name }}"
+
+      - name: access env variables
+        run: |
+          echo "Project: $project"
+          echo "Component: $component"
+          echo "Environment: $environment"
