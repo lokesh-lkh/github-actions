@@ -1,0 +1,10 @@
+name: Contexts demo 
+on: [push] # Triggers the workflow on every push to the repository
+
+jobs:
+  # Job name
+  github-context:
+    runs-on: ubuntu-latest # Github hosted runners
+    steps:
+      - name: print info
+        run: echo "{{ toJson(github) }}" # The command to execute
