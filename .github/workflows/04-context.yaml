@@ -1,15 +1,17 @@
-name: Contexts demo 
+name: Contexts demo
 on: [push] # Triggers the workflow on every push to the repository
 
 env:
   project: "roboshop"
   component: "catalogue"
   environment: "dev"
-
 jobs:
   # Job name
   github-context:
     runs-on: ubuntu-latest # Github hosted runners
+    outputs:
+      image-name: ${{ steps.tag.outputs.image-name }}
+      image-version: ${{ steps.tag.outputs.version }}
     steps:
       - name: print info
         run: |
@@ -21,3 +23,57 @@ jobs:
           echo "Project: $project"
           echo "Component: $component"
           echo "Environment: $environment"
+
+      - name: print secrets
+        run: |
+          echo "DB User name: ${{ secrets.DB_USER }}"
+          echo "DB password: ${{ secrets.DB_PASSWORD }}"
+
+        
+      - name: print variables
+        run: |
+          echo "DB URL: ${{ vars.DB_URL }}"
+
+
+      - name: image tag
+        id: tag # id is mandatory to access the output of this step in later steps
+        run: |
+          echo "version=1.0.0" >> $GITHUB_OUTPUT
+          echo "image-name=catalogue" >> $GITHUB_OUTPUT
+
+      - name: print previous step output
+        run: |
+          echo "Image name: ${{ steps.tag.outputs.image-name }}"
+          echo "Version: ${{ steps.tag.outputs.version }}"
+
+      # useful with in the job
+      - name: github env
+        run: |
+          echo "Course=github-actions" >> $GITHUB_ENV
+          echo "Duration=5hours" >> $GITHUB_ENV
+
+      - name: print github env
+        run: |
+          echo "Course: $Course"
+          echo "Duration: $Duration"
+
+  deploy:
+    needs: github-context # means depends on above job
+    runs-on: ubuntu-latest # Github hosted runners
+    steps:
+      - name: print github env in another job
+        run: |
+          echo "Image Name: ${{ needs.github-context.outputs.image-name }}"
+          echo "Image Version: ${{ needs.github-context.outputs.image-version }}"
+
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+    - name: run sonar scan
+      run: echo "Sonar Scan"
+
+    - name: print job Contexts
+      run: echo "${{ toJson(job) }}"
+
+    - name: print runner Contexts
+      run: echo "${{ toJson(runner) }}"
