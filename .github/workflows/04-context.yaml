@@ -9,4 +9,4 @@ jobs:
       - name: print info
         run: |
         echo "${{ toJson(github) }}" # The command to execute
-        echo "branch name: ${{ github.ref }}"
+        echo "branch name: ${{ github.ref_name }}"
