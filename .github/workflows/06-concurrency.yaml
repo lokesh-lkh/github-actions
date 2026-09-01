@@ -1,0 +1,14 @@
+name: main-workflow
+on: [push] # Triggers the workflow on every push to the repository
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }} # main-workflow-main
+  cancel-in-progress: true # if true, present execution will be cancelled, new trigger will happen
+
+jobs:
+  # Job name
+  say-hello:
+    runs-on: ubuntu-latest # Github hosted runners
+    steps:
+      - name: Greet the world
+        run: sleep 60 # The command to execute
+  
